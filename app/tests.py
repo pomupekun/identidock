@@ -5,7 +5,7 @@ class TestCase(unittest.TestCase):
 
     def setUp(self):
         identidock.app.config["TESTING"] = True
-        self.app = identidock.app.tets_client()
+        self.app = identidock.app.test_client()
 
     def test_get_mainpage(self):
         page = self.app.post("/", data=dict(name="Moby Dock"))
@@ -18,3 +18,4 @@ class TestCase(unittest.TestCase):
         
 if __name__ == '__main__':
     unittest.main()
+
