@@ -1,17 +1,18 @@
 identidock:
-  build: .
+  #  build: .
+  image: amouat/identidock:1.0
   ports:
     - "5000:5000"
+    - "9000:9000"
   environment:
     ENV: DEV
-  volumes:
-    - ./app:/app
+  #  volumes:
+  #    - ./app:/app
   links:
     - dnmonster
-    - redis 
+    - redis
 dnmonster:
   image: amouat/dnmonster:1.0
-
 redis:
   image: redis:3.0
 
