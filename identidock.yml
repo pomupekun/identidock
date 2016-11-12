@@ -1,0 +1,46 @@
+---
+- hosts: identidock
+  sudo: yes
+  tasks:
+  - name: easy_install
+    apt: pkg=python-setuptools
+  - name: pip
+    easy_install: name=pip
+    ### ホスト側がansibleのdockerモジュールを利用するのにdocker-pyが必要
+  - name: docker-py
+    pip: name=docker-py
+  - name: redis container
+    docker:
+      name: redis
+      image: amouat/dnmonster:1.0
+      ### Dockerイメージの更新チェックのタイミング (always: タスク実行の度にイメージが更新されているかチェックする)
+      pull: always
+      ### コンテナのあるべき状態を指定する。(reloaded: 設定が変更されると再起動される)
+      state: reloaded
+      start_policy: always
+  - name: identidock container
+    docker:
+      name: identidock
+      image: pomupekun/identidock_auto:auto
+      pull: always
+      state: reloaded
+      links:
+        - "dnmonster:dnmonster"
+        - "redis:redis"
+      env:
+        ENV: PROD
+  - name: proxy container
+    docker:
+      name: proxy
+      image: pomupekun/identi_proxy
+      pull: always
+      state: reloaded
+      links:
+        - "identidock:identidock"
+      ports:
+        - "80:80"
+      env:
+        NGINX_HOST: www.identidock.com
+        NGINX_PROXY: http://identidock:9090
+      restart_policy: always
+
